@@ -233,4 +233,4 @@ print(Fore.LIGHTMAGENTA_EX + "Working. Made by GUMI#1337")
 print(Fore.MAGENTA + "Working. Made by GUMI#1337")
 print(Fore.RESET)
 
-bot.run("OTczMjEzNjI3NTIxODQzMjMw.GCEGEC.7MwDPgU2Tio_FqN9g-nFwq99nMltydVXvJ9Gmg")
+bot.run("ADD YOUR TOKEN HERE")

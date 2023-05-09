@@ -6,7 +6,7 @@ import csv
 import nextcord
 from nextcord.ext import commands
 from colorama import just_fix_windows_console
-from colorama import Fore, Back, Style
+from colorama import Fore
 import time
 import re
 
@@ -24,24 +24,20 @@ AUTHORIZED_USERS = [
     786612352656080907,  # MURPHY
     718168143155036261,  # Mayins
     855212339866632203,  # Katy
-    483056864355942405,  # GUMI
+    #    483056864355942405,  # GUMI
 ]
-GUILD_TO_USE = [
-    839361178127695922,  # My test server
-    1084367607982993428  # Valo ESP
-]
+GUILD_TO_USE = [839361178127695922, 1084367607982993428]  # My test server  # Valo ESP
 
 # Add channel IDs, separated by commas.
 CHANNELS_TO_CHECK = [
     1099216827923562568,  # General chat
-    839361179892580394  # My test server
+    839361179892580394,  # My test server
 ]
 
 bot = commands.Bot(
     command_prefix="lain!",
     status=nextcord.Status.do_not_disturb,
-    activity=nextcord.Game(name="Bot de moderación por GUMI#1337 and "
-                                "Lain#1312"),
+    activity=nextcord.Game(name="Bot de moderación por Lain#1312"),
     intents=intents,
 )
 
@@ -91,7 +87,7 @@ async def del_csv_file(filename, msg):
 
 
 async def contains_unwhitelisted_domain(url):
-    whitelist = ['tenor.com', 'media.tenor.com']
+    whitelist = ["tenor.com", "media.tenor.com", "media.discordapp.net"]
 
     # Split the text into words
     words = url.split()
@@ -99,9 +95,9 @@ async def contains_unwhitelisted_domain(url):
     # Loop through each word in the text
     for word in words:
         # Check if the word is a URL
-        if re.match(r'https?://\S+', word):
+        if re.match(r"https?://\S+", word):
             # Extract the domain name from the URL
-            domain = re.search(r'https?://(?:www\.)?([\w.-]+)', word).group(1)
+            domain = re.search(r"https?://(?:www\.)?([\w.-]+)", word).group(1)
             # Check if the domain is in the whitelist
             if domain not in whitelist:
                 return True
@@ -119,12 +115,15 @@ async def read_wordlist(ctx):
             ephemeral=True,
         )
         print(
-            f'{Fore.RESET} {local_time} > {Fore.CYAN} {ctx.user} ({ctx.user.id}) {Fore.RESET} -> Read_wordlist. {Fore.RED} NO '
-            f'PERMISSIONS.')
+            f"{Fore.RESET} {local_time} > {Fore.CYAN} {ctx.user} ({ctx.user.id}) {Fore.RESET} -> Read_wordlist. {Fore.RED} NO "
+            f"PERMISSIONS."
+        )
     else:
         wordlist = await read_csv_file("wordlist.csv")
         await ctx.response.send_message(wordlist)
-        print(f'{Fore.RESET} {local_time} > {Fore.CYAN} {ctx.user} ({ctx.user.id}) {Fore.RESET} -> Read_wordlist.')
+        print(
+            f"{Fore.RESET} {local_time} > {Fore.CYAN} {ctx.user} ({ctx.user.id}) {Fore.RESET} -> Read_wordlist."
+        )
 
 
 @bot.slash_command(guild_ids=GUILD_TO_USE)
@@ -136,16 +135,18 @@ async def write_to_wordlist(ctx, msg):
             ephemeral=True,
         )
         print(
-            f'{Fore.RESET} {local_time} > {Fore.CYAN} {ctx.user} ({ctx.user.id}) {Fore.RESET} -> Write_to_wordlist. {Fore.RED} '
-            f'NO PERMISSIONS.')
+            f"{Fore.RESET} {local_time} > {Fore.CYAN} {ctx.user} ({ctx.user.id}) {Fore.RESET} -> Write_to_wordlist. {Fore.RED} "
+            f"NO PERMISSIONS."
+        )
     else:
         await write_csv_file("wordlist.csv", msg)
         wordlist = await read_csv_file("wordlist.csv")
         await ctx.response.send_message(wordlist)
         print(
-            f'{Fore.RESET} {local_time} > {Fore.CYAN} {ctx.user} ({ctx.user.id}) {Fore.RESET} -> Write_to_wordlist. | Added '
-            f'words: '
-            f'{Fore.GREEN} {msg}')
+            f"{Fore.RESET} {local_time} > {Fore.CYAN} {ctx.user} ({ctx.user.id}) {Fore.RESET} -> Write_to_wordlist. | Added "
+            f"words: "
+            f"{Fore.GREEN} {msg}"
+        )
 
 
 @bot.slash_command(guild_ids=GUILD_TO_USE)
@@ -157,24 +158,27 @@ async def delete_from_wordlist(ctx, msg):
             ephemeral=True,
         )
         print(
-            f' {Fore.RESET} {local_time} > {Fore.CYAN} {ctx.user} ({ctx.user.id}) {Fore.RESET} -> Delete_from_wordlist.'
-            f' {Fore.RED} NO '
-            f'PERMISSIONS.')
+            f" {Fore.RESET} {local_time} > {Fore.CYAN} {ctx.user} ({ctx.user.id}) {Fore.RESET} -> Delete_from_wordlist."
+            f" {Fore.RED} NO "
+            f"PERMISSIONS."
+        )
     else:
         await del_csv_file("wordlist.csv", msg)
         wordlist = await read_csv_file("wordlist.csv")
         await ctx.response.send_message(wordlist)
         print(
-            f' {Fore.RESET} {local_time} > {Fore.CYAN} {ctx.user} ({ctx.user.id}) {Fore.RESET} -> Delete_from_wordlist. | '
-            f'Deleted words: '
-            f'{Fore.GREEN} {msg}')
+            f" {Fore.RESET} {local_time} > {Fore.CYAN} {ctx.user} ({ctx.user.id}) {Fore.RESET} -> Delete_from_wordlist. | "
+            f"Deleted words: "
+            f"{Fore.GREEN} {msg}"
+        )
 
 
 @bot.event
 async def on_message(message):
     if message.author == bot.user:
         return
-
+    if message.author.id in AUTHORIZED_USERS:
+        return
     words_to_check = await read_csv_file("wordlist.csv")
 
     # Check if the message was sent in the specified channel
@@ -193,31 +197,30 @@ async def on_message(message):
                     "los canales.\n "
                     "**INSTRUCCIONES:** https://canary.discord.com/channels/1084367607982993428/1099067987291541514/1100082703774257252"
                 )
-                print(f' {Fore.RESET} {local_time} > {Fore.CYAN} {message.author} ({message.author.id}) {Fore.RESET} -> SENT A BLOCKED WORD. | Deleted content: {Fore.GREEN} {message.content}')
-    await bot.process_commands(message)
+                print(
+                    f" {Fore.RESET} {local_time} > {Fore.CYAN} {message.author} ({message.author.id}) {Fore.RESET} -> SENT A BLOCKED WORD. | Deleted content: {Fore.GREEN} {message.content}"
+                )
 
-
-@bot.event
-async def on_message(message):
-    if message.author == bot.user:
-        return
-    if message.author.id in AUTHORIZED_USERS:
-        return
     lvl35 = nextcord.utils.get(message.guild.roles, id=1100091106961674302)
     booster = nextcord.utils.get(message.guild.roles, id=1084370060870684782)
+    test = nextcord.utils.get(message.guild.roles, id=1105532679371378824)
     local_time = await get_time()
-    if 'http' or 'www' in message.content.lower():
-        if lvl35 or booster in message.author.roles:
+    if "http" in message.content.lower() or "www" in message.content.lower():
+        print(message.content.lower())
+
+        if lvl35 or booster or test in message.author.roles:
             check = await contains_unwhitelisted_domain(message.content.lower())
             if check:
                 await message.delete()
-                print(f' {Fore.RESET} {local_time} > {Fore.CYAN} {message.author} ({message.author.id}) {Fore.RESET} -> SENT A BLOCKED WORD. | Deleted content: {Fore.GREEN} {message.content}')
-
+                print(
+                    f" {Fore.RESET} {local_time} > {Fore.CYAN} {message.author} ({message.author.id}) {Fore.RESET} -> SENT A BLOCKED URL. HAS ROLES. | Deleted content: {Fore.GREEN} {message.content}"
+                )
                 return
         else:
             await message.delete()
-            print(f' {Fore.RESET} {local_time} > {Fore.CYAN} {message.author} ({message.author.id}) {Fore.RESET} -> SENT A BLOCKED URL. | Deleted content: {Fore.GREEN} {message.content}')
-
+            print(
+                f" {Fore.RESET} {local_time} > {Fore.CYAN} {message.author} ({message.author.id}) {Fore.RESET} -> SENT A BLOCKED URL. NO ROLES. | Deleted content: {Fore.GREEN} {message.content}"
+            )
             return
 
 
@@ -230,4 +233,4 @@ print(Fore.LIGHTMAGENTA_EX + "Working. Made by GUMI#1337")
 print(Fore.MAGENTA + "Working. Made by GUMI#1337")
 print(Fore.RESET)
 
-bot.run("TOKEN, DO NOT SHARE WITH ANYONE")
+bot.run("OTczMjEzNjI3NTIxODQzMjMw.GCEGEC.7MwDPgU2Tio_FqN9g-nFwq99nMltydVXvJ9Gmg")
